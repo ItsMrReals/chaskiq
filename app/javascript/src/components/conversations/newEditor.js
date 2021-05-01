@@ -137,8 +137,6 @@ export default class ChatEditor extends Component {
       read_only: false
     }
 
-    this.fallbackEditor = this.isMobile()
-
     this.editorRef = React.createRef()
   }
 
