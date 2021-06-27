@@ -12,6 +12,7 @@ class AppPackageIntegration < ApplicationRecord
   store :settings, accessors: %i[
     api_key
     api_secret
+    endpoint_url
     project_id
     report_id
     access_token
@@ -32,6 +33,28 @@ class AppPackageIntegration < ApplicationRecord
 
       errors.add(key, "#{key} is required") if send(key).blank?
     end
+  end
+
+  validate :integration_validation, on: [:create, :update]
+
+  def integration_validation
+    return if app_package.is_external?
+
+    error_response = message_api_validations
+    
+    return if error_response.blank?
+    
+    error_response.each do |err|
+      errors.add(:base, err)
+    end
+  end
+
+  def message_api_validations
+    return nil unless message_api_klass.respond_to?(:validate_integration)
+
+    error_response = message_api_klass.validate_integration
+
+    error_response
   end
 
   def message_api_klass
@@ -87,9 +110,7 @@ class AppPackageIntegration < ApplicationRecord
     message_api_klass.enqueue_process_event(params, self)
   end
 
-  def send_message(conversation, options)
-    message_api_klass.send_message(conversation, options)
-  end
+  delegate :send_message, to: :message_api_klass
 
   def oauth_authorize
     return if app_package.is_external?
@@ -102,13 +123,13 @@ class AppPackageIntegration < ApplicationRecord
   end
 
   def self.decode(encoded)
-    result = URLcrypt.decode(encoded).split('+')
+    result = URLcrypt.decode(encoded).split("+")
     App.find_by(key: result.first).app_package_integrations.find(result.last)
   end
 
   def hook_url
     # host = 'https://chaskiq.ngrok.io'
-    host = ENV['HOST']
+    host = ENV["HOST"]
     "#{host}/api/v1/hooks/receiver/#{encoded_id}"
   end
 
@@ -145,11 +166,11 @@ class AppPackageIntegration < ApplicationRecord
 
     validate_schema!(response[:definitions])
 
-    if response['kind'] == 'initialize'
+    if response["kind"] == "initialize"
       params[:ctx][:field] = nil
-      params[:ctx][:values] = response['results']
+      params[:ctx][:values] = response["results"]
       response = presenter.initialize_hook(params)
-      response.merge!(kind: 'initialize')
+      response.merge!(kind: "initialize")
     end
 
     return response if response[:results].blank?
@@ -162,7 +183,7 @@ class AppPackageIntegration < ApplicationRecord
 
       values = params[:ctx][:values]
       m = message.message
-      blocks = m.blocks.merge('schema' => response[:definitions])
+      blocks = m.blocks.merge("schema" => response[:definitions])
       m.blocks = blocks
       m.save_replied(response[:results])
     end
@@ -177,12 +198,12 @@ class AppPackageIntegration < ApplicationRecord
 
   def presenter_hook_response(params, presenter)
     case params[:kind]
-    when 'initialize' then presenter.initialize_hook(params)
-    when 'configure' then presenter.configure_hook(params)
-    when 'submit' then presenter.submit_hook(params)
-    when 'frame' then presenter.sheet_hook(params)
-    when 'content' then presenter.content_hook(params) # not used
-    else raise 'no compatible hook kind'
+    when "initialize" then presenter.initialize_hook(params)
+    when "configure" then presenter.configure_hook(params)
+    when "submit" then presenter.submit_hook(params)
+    when "frame" then presenter.sheet_hook(params)
+    when "content" then presenter.content_hook(params) # not used
+    else raise "no compatible hook kind"
     end
   end
 end
@@ -195,7 +216,7 @@ class ExternalPresenterManager
     resp = Faraday.post(
       url,
       data.to_json,
-      'Content-Type' => 'application/json'
+      "Content-Type" => "application/json"
     )
     JSON.parse(resp.body)
   end

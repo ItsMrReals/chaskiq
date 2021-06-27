@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-import { ListItem, ItemAvatar, ListItemText } from '../../../components/List'
-import Button from '../../../components/Button'
-import { AnchorLink } from '../../../shared/RouterLink'
+import Button from '@chaskiq/components/src/components/Button'
+import {ListItem, ItemAvatar, ListItemText} from '@chaskiq/components/src/components/List' 
+import {AnchorLink} from '@chaskiq/components/src/components/RouterLink'
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list)
@@ -37,7 +37,7 @@ const getItemStyle = (_isDragging, draggableStyle) => {
     // change background colour if dragging
     // background: isDragging ? 'lightgreen' : '#ff0000',
     // styles we need to apply on draggables
-    ...draggableStyle
+    ...draggableStyle,
   }
 }
 
@@ -60,14 +60,14 @@ const getListClass = (isDraggingOver) => {
 }
 
 class App extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     /* this.props = {
       sections: this.props.sections
     } */
   }
 
-  getList = (id) => this.props.sections.find((o) => o.id === id).articles;
+  getList = (id) => this.props.sections.find((o) => o.id === id).articles
 
   onDragEnd = (result) => {
     const { source, destination } = result
@@ -90,7 +90,9 @@ class App extends Component {
       )
 
       const newCollection = this.props.sections.map((o) => {
-        if (o.id === destination.droppableId) { return Object.assign({}, o, { articles: items }) }
+        if (o.id === destination.droppableId) {
+          return Object.assign({}, o, { articles: items })
+        }
         return o
       })
 
@@ -118,9 +120,9 @@ class App extends Component {
       id: el.id,
       position: destination.index,
       section: String(section.id),
-      collection: String(this.props.collectionId)
+      collection: String(this.props.collectionId),
     })
-  };
+  }
 
   updateSections = (data) => {
     /* this.setState({ sections: data }, ()=>{
@@ -128,9 +130,9 @@ class App extends Component {
     }); */
 
     this.props.handleDataUpdate(data)
-  };
+  }
 
-  render () {
+  render() {
     return (
       <div style={{ displayDisable: 'flex' }}>
         <DragDropContext onDragEnd={this.onDragEnd}>
@@ -139,19 +141,19 @@ class App extends Component {
               <div className="flex flex-col">
                 <div className="flex justify-between items-baseline py-2">
                   <div>
-
-                    <h3 className="text-3xl leading-6 font-medium text-gray-900 py-4">
+                    <h3 className="text-3xl leading-6 font-medium text-gray-900 py-4 dark:text-gray-100">
                       {o.title}
                     </h3>
                   </div>
 
                   <div item>
-                    <Button
-                      variant={'outlined'}
-                      onClick={() => this.props.requestUpdate(o)}
-                    >
-                      Edit
-                    </Button>
+                    {o.id !== "base" && 
+                      <Button
+                        variant={'outlined'}
+                        onClick={() => this.props.requestUpdate(o)}>
+                        {I18n.t('common.edit')}
+                      </Button>
+                    }
                   </div>
                 </div>
 
@@ -184,19 +186,19 @@ class App extends Component {
                                 )}
                               >
                                 <ListItem divider={true}>
-                                  <ItemAvatar
-                                    avatar={item.author.avatarUrl}
-                                  />
+                                  <ItemAvatar avatar={item.author.avatarUrl} />
                                   <ListItemText
                                     primary={
-                                      <AnchorLink to={`/apps/${this.props.app.key}/articles/${item.slug}`}>
-                                        <p className="text-lg leading-6 font-medium text-gray-900 pb-1 hover:underline">
+                                      <AnchorLink
+                                        to={`/apps/${this.props.app.key}/articles/${item.slug}`}
+                                      >
+                                        <p className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 pb-1 hover:underline">
                                           {item.title}
                                         </p>
                                       </AnchorLink>
                                     }
                                     secondary={
-                                      <span className="mt-2 max-w-xl text-sm leading-5 text-gray-500">
+                                      <span className="mt-2 max-w-xl text-sm leading-5 text-gray-500 dark:text-gray-300">
                                         {item.author.name}
                                         <br />
                                         {item.author.email}
@@ -219,7 +221,7 @@ class App extends Component {
                           className="mr-2"
                           onClick={(_e) => this.props.addArticlesToSection(o)}
                         >
-                          Add articles
+                          {I18n.t('articles.add_articles')}
                         </Button>
 
                         {o.id !== 'base' && (
@@ -229,12 +231,12 @@ class App extends Component {
                             color="secondary"
                             onClick={(_e) => this.props.deleteSection(o)}
                           >
-                            Delete section
+                            {I18n.t('articles.delete_section')}
                           </Button>
                         )}
                       </div>
 
-                      <p className="mt-2 max-w-xl text-sm leading-5 text-gray-500">
+                      <p className="mt-2 max-w-xl text-sm leading-5 text-gray-500 dark:text-gray-300">
                         {o.articles.length} articles
                       </p>
                     </div>

@@ -1,38 +1,36 @@
 import React, { Component } from 'react'
-import { toSnakeCase } from '../../shared/caseConverter'
 import serialize from 'form-serialize'
-import FieldRenderer, {
-  gridClasses
-} from '../../components/forms/FieldRenderer'
-import Button from '../../components/Button'
-import Hints from '../../shared/Hints'
 
+import FieldRenderer, {gridClasses} from '@chaskiq/components/src/components/forms/FieldRenderer' 
+import Button from '@chaskiq/components/src/components/Button'
+import Hints from '@chaskiq/components/src/components/Hints'
+import { toSnakeCase } from '@chaskiq/components/src/utils/caseConverter'
 export default class SettingsForm extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       selected: 0,
       data: {},
-      errors: {}
+      errors: {},
     }
   }
 
   tabs = () => {
     var b = []
     return b
-  };
+  }
 
   onSubmitHandler = (e) => {
     e.preventDefault()
     const serializedData = serialize(this.formRef, {
       hash: true,
-      empty: true
+      empty: true,
     })
     const data = toSnakeCase(serializedData)
     this.props.update(data)
-  };
+  }
 
-  render () {
+  render() {
     return (
       <div className="py-4">
         <form
@@ -42,14 +40,11 @@ export default class SettingsForm extends Component {
             this.formRef = form
           }}
         >
-
-          {
-            this.props.hint && <Hints type={this.props.hint}/>
-          }
+          {this.props.hint && <Hints type={this.props.hint} />}
 
           <p
             className="text-lg leading-6 font-medium
-                text-gray-900 py-4"
+                text-gray-900 dark:text-gray-100 py-4"
           >
             {this.props.title}
           </p>
@@ -76,11 +71,7 @@ export default class SettingsForm extends Component {
 
           <div className="flex">
             <div className=" w-full sm:w-1/2">
-              <Button
-                variant="success"
-                color="primary"
-                size="md"
-                type="submit">
+              <Button variant="success" color="primary" size="md" type="submit">
                 {I18n.t('common.save')}
               </Button>
             </div>
