@@ -49,8 +49,6 @@ gem "graphql"
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
-
-gem "email_reply_trimmer"
 # gem 'tunable'
 gem "aasm"
 gem "acts_as_list", "~> 0.9.19"
@@ -81,7 +79,7 @@ gem "omniauth-oauth2"
 gem "image_processing", "~> 1.2"
 gem "sidekiq"
 gem "sidekiq-cron"
-gem "webpacker", "~> 5.0"
+gem "webpacker", "~> 5.4.0"
 
 gem "emoji_data", github: "chaskiq/emoji_data.rb"
 gem "roadie"
@@ -108,7 +106,8 @@ gem "kaminari", "~> 1.2"
 gem "timezone", "~> 1.2"
 
 gem "bugsnag" # , '~> 6.11'
-gem "email_reply_parser", "~> 0.5.9"
+# gem "email_reply_parser", "~> 0.5.9"
+gem 'email_reply_trimmer'
 gem "rack-cors", "~> 1.0"
 
 gem "biz", "~> 1.8"
